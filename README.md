@@ -35,7 +35,7 @@ The output is a textfile named `output.txt`. Each line contains the result of th
 
 Sample Input
 ```
-(*a++(*) 
+(*a++(*)
 (*a{+}*)
 ```
 Sample Output

@@ -7,64 +7,55 @@ takes input.txt and checks if the brackets that exist within it are valid and ou
 __author__ = "nate998877"
 
 import sys
-import re
 
 # (  ) [  ] {  } <  > (*  *) brackets 2 check
 def main(args):
-    bracket_list = [("(",")"), ("[","]"), ("{","}"), ("<",">"), ("(*","*)")]
-    bracket_queue = [] # I was going to use Queue.queue, but if you can't tell I was lazy with this one. I don't like the pythonic ways
+    index = 1
+    char = 0
+    bracket_list = ["(",")","[","]","{","}","<",">","(*","*)"]
+    bracket_queue = []
     output = []
     with open("input.txt") as lines:
         for (coke, line) in enumerate(lines):
             i = 0
             bracket_queue = []
             while i < len(line):
-                if line[i] == "(":
-                    try:
-                        if line[i+1] == "*":
-                            bracket_queue.append(("*",i))
-                            i = i + 2;
-                            continue
-                    except:
-                        output.append("NO "+ str(i))
-                        i = i+1
-                        break
-                if line[i] == "*":
-                    try:
-                        if line[i+1] == ")":
-                            queue_tuple = bracket_queue.pop()
-                            if queue_tuple[0] is not "*":
-                                output.append("NO " + str(queue_tuple[1]))
-                                i = i+2
-                                break
-                    except:
-                        try:
-                            queue_tuple = bracket_queue.pop()
-                            output.append("NO "+ str(queue_tuple[1]))
-                            i = i+1
-                            break
-                        except:
-                            output.append("NO "+ str(i))
-                            i = i+1
-                            break
-                for bracket_tuple in bracket_list:
-                    if line[i] in bracket_tuple:
-                        if bracket_list[0] == line[i]:
-                            bracket_queue.append(line[i])
+                try:
+                    if bracket_list.index(line[i]) % 2 == 0:
+                        if line[i] == "(" and line[i+1] == "*":
+                            bracket_queue.append(("(*", i))
                         else:
-                            try:
-                                queue_tuple = bracket_queue.pop()
-                                if line[i] != queue_tuple[0]:
-                                    output.append("NO "+ str(queue_tuple[1]))
-                                    i = i+1
+                            bracket_queue.append((line[i], i))
+                        i += 1
+                    elif bracket_list.index(line[i]) % 2 == 1:
+                        try:
+                            bracket = bracket_queue.pop()
+                            if line[i] == ")" and line[i-1] == "*" and line[i-2] != "(":
+                                if bracket[char] == "(*":
+                                    i += 1
+                                else:
+                                    output.append("NO " + str(i))
                                     break
-                            except:
-                                output.append("NO "+ str(i))
-                                i = i+1
+                            elif bracket[char] == bracket_list[bracket_list.index(line[i])-1]:
+                                i += 1
+                            else:
+                                if line[i] == ")" and bracket[char] == "(*":
+                                    output.append("NO " + str(i))
+                                else:
+                                    output.append("NO " + str(i))
                                 break
-                i = i+1
-            if len(output)-1 != coke:
-                output.append("YES")
+                        except:
+                            output.append("NO " + str(i))
+                            break
+                except:
+                    i+=1
+            if(len(output) < coke+1):
+                if len(bracket_queue) != 0:
+                    if len(output) != coke+1:
+                        bracket = bracket_queue.pop()
+                        output.append("NO " + str(bracket[index]))
+                else:
+                    output.append("YES")
     with open("output.txt", "w+") as oh_yeah:
         for answer in output:
             oh_yeah.write(answer + "\n")
